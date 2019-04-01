@@ -2,7 +2,6 @@
 
 use strict;
 use warnings;
-use v5.10;
 use Data::Dumper;
 
 # Try open file on reading
@@ -10,8 +9,9 @@ open(my $fh, "<", shift @ARGV) or die "Can't open file: $!";
 
 # matrix-array-ref from file
 my %matrix;
-# it's a rows
-my $i = 0;
+# it's a rows and columns
+my $rows = 0;
+
 # sub transpose
 sub transpose {
       my $rows = $_[0];
@@ -20,17 +20,13 @@ sub transpose {
       for my $i (0..$rows-1){
       	for my $j ($i+1..$columns-1){
       		if (exists $ref->{"$j,$i"}) {
-      			my $tmp = $ref->{"$j,$i"};
-      			$ref->{"$j,$i"} = $ref->{"$i,$j"};
-      			$ref->{"$i,$j"} = $tmp;
+            ($ref->{"$i,$j"},$ref->{"$j,$i"}) = ($ref->{"$j,$i"},$ref->{"$i,$j"});
       		}
       		else {
-      			$ref->{"$j,$i"} = $ref->{"$i,$j"};
-      			delete $ref->{"$i,$j"}; 
+      			$ref->{"$j,$i"} = delete $ref->{"$i,$j"};
       		}
       	}
-      }
- 
+      } 
 }
 
 # Creating @matrix
@@ -39,22 +35,30 @@ while (!eof $fh) {
     # delete trailing symbols
     chomp $line;
     # split line-string into list
-    my @row = split /\t/, $line;
+    my @elements = split /\t/, $line;
     # create matrix-hash
-    for my $j (0..$#row){
-    	$matrix{"$i,$j"} = $row[$j];
+    my $columns = 0;
+    for my $element (@elements){
+    	$matrix{"$rows,$columns"} = $element;
+      $columns++;
     } 
     # incremet row_count
-    $i++;
+    $rows++;
 
 }
 #it's a columns
-my $j = (scalar values %matrix) / $i;
+my $columns = values(%matrix) / $rows;
 # let's transpose matrix
-transpose($i, $j, \%matrix);
+transpose($rows, $columns, \%matrix);
 
-for my $i (sort keys %matrix){
-	say "$matrix{$i}\t";
+
+
+#print transpose matrix-hash
+for my $column (0..$columns-1){
+  for my $row (0..$rows-1){
+    print "$matrix{\"$column,$row\"}\t"
+  }
+  print "\n--"
 }
 
 
