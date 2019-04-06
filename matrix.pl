@@ -58,7 +58,7 @@ for my $column (0..$columns-1){
   for my $row (0..$rows-1){
     print "$matrix{\"$column,$row\"}\t"
   }
-  print "\n--"
+  print "\n"
 }
 
 
