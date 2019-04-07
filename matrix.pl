@@ -1,9 +1,8 @@
 #!/usr/bin/env perl
 
-use strict;
-use warnings;
-use Data::Dumper;
+use v5.20;
 
+die "Script must have arguments. Please try again with arguments\n" if ($#ARGV == -1);
 # Try open file on reading
 open(my $fh, "<", shift @ARGV) or die "Can't open file: $!";
 
@@ -14,19 +13,19 @@ my $rows = 0;
 
 # sub transpose
 sub transpose {
-      my $rows = $_[0];
-      my $columns = $_[1];
-      my $ref = $_[2];
-      for my $i (0..$rows-1){
-      	for my $j ($i+1..$columns-1){
-      		if (exists $ref->{"$j,$i"}) {
-            ($ref->{"$i,$j"},$ref->{"$j,$i"}) = ($ref->{"$j,$i"},$ref->{"$i,$j"});
-      		}
-      		else {
-      			$ref->{"$j,$i"} = delete $ref->{"$i,$j"};
-      		}
-      	}
-      } 
+  my $rows = $_[0];
+  my $columns = $_[1];
+  my $ref = $_[2];
+  for my $i (0..$rows-1){
+    for my $j ($i+1..$columns-1){
+      if (exists $ref->{"$j,$i"}) {
+        ($ref->{"$i,$j"},$ref->{"$j,$i"}) = ($ref->{"$j,$i"},$ref->{"$i,$j"});
+      }
+      else {
+      	$ref->{"$j,$i"} = delete $ref->{"$i,$j"};
+      }
+    }
+  } 
 }
 
 # Creating @matrix
