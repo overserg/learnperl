@@ -2,28 +2,25 @@
 
 use v5.20;
 
-die "Script must have arguments. Please try again with arguments\n" if ($#ARGV == -1);
+die "Script must have arguments! Please choose file with matrix inside.\n" if $ARGV;
 # Try open file on reading
 open(my $fh, "<", shift @ARGV) or die "Can't open file: $!";
 
-# matrix-array-ref from file
+# matrix-array-matrix from file
 my %matrix;
 # it's a rows and columns
 my $rows = 0;
 
 # sub transpose
 sub transpose {
-  my $rows = $_[0];
-  my $columns = $_[1];
-  my $ref = $_[2];
+  my ($rows, $columns, $matrix) = @_;
   for my $i (0..$rows-1){
     for my $j ($i+1..$columns-1){
-      if (exists $ref->{"$j,$i"}) {
-        ($ref->{"$i,$j"},$ref->{"$j,$i"}) = ($ref->{"$j,$i"},$ref->{"$i,$j"});
+      if (exists $matrix->{"$j,$i"}) {
+        ($matrix->{"$i,$j"},$matrix->{"$j,$i"}) = ($matrix->{"$j,$i"},$matrix->{"$i,$j"});
+        next;
       }
-      else {
-      	$ref->{"$j,$i"} = delete $ref->{"$i,$j"};
-      }
+      $matrix->{"$j,$i"} = delete $matrix->{"$i,$j"};
     }
   } 
 }
@@ -46,7 +43,7 @@ while (!eof $fh) {
 
 }
 #it's a columns
-my $columns = values(%matrix) / $rows;
+my $columns = %matrix / $rows;
 # let's transpose matrix
 transpose($rows, $columns, \%matrix);
 
@@ -55,7 +52,7 @@ transpose($rows, $columns, \%matrix);
 #print transpose matrix-hash
 for my $column (0..$columns-1){
   for my $row (0..$rows-1){
-    print "$matrix{\"$column,$row\"}\t"
+    print qq($matrix{"$column,$row"}\t)
   }
   print "\n"
 }
